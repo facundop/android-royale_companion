@@ -8,8 +8,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
@@ -21,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
     private RewardedVideoAd mRewardedVideoAd;
     private TextView mTextMessage;
     private Button mButtonGetUpcomingChests;
+    private TextView mTextUpcomingChests;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -32,15 +38,18 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
                     mTextMessage.setVisibility(View.VISIBLE);
                     mTextMessage.setText(R.string.title_profile);
                     mButtonGetUpcomingChests.setVisibility(View.GONE);
+                    mTextUpcomingChests.setVisibility(View.GONE);
                     return true;
                 case R.id.navigation_chests:
                     mTextMessage.setVisibility(View.GONE);
+                    mTextUpcomingChests.setVisibility(View.VISIBLE);
                     mButtonGetUpcomingChests.setVisibility(View.VISIBLE);
                     return true;
                 case R.id.navigation_settings:
                     mTextMessage.setVisibility(View.VISIBLE);
                     mTextMessage.setText(R.string.title_settings);
                     mButtonGetUpcomingChests.setVisibility(View.GONE);
+                    mTextUpcomingChests.setVisibility(View.GONE);
                     return true;
             }
             return false;
@@ -58,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
         mRewardedVideoAd.setRewardedVideoAdListener(this);
 
         mTextMessage = (TextView) findViewById(R.id.message);
+        mTextUpcomingChests = (TextView) findViewById(R.id.upcoming_chests);
+        mTextUpcomingChests.setVisibility(View.GONE);
         mButtonGetUpcomingChests = (Button) findViewById(R.id.get_upcoming_chests_button);
         mButtonGetUpcomingChests.setVisibility(View.GONE);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -80,7 +91,32 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
     @Override
     public void onRewarded(RewardItem reward) {
         //Toast.makeText(this, "onRewarded! currency: " + reward.getType() + "  amount: " + reward.getAmount(), Toast.LENGTH_SHORT).show();
+
         // Reward the user.
+
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="http://www.google.com";
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        mTextUpcomingChests.setText("Response is: "+ response.substring(0,500));
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                mTextUpcomingChests.setText("An error ocurred retrieven upcoming chests.");
+            }
+        });
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
+
+        mTextUpcomingChests.setText("Lista de cofres");
     }
 
     @Override
