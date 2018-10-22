@@ -22,7 +22,8 @@
         android:id="@+id/get_upcoming_chests_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/get_upcoming_chests_button" />
+        android:text="@string/get_upcoming_chests_button"
+        android:onClick="getUpcomingChestsClick"/>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
