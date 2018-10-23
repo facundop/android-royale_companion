@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Royale Companion</string>
-    <string name="title_profile">Profile</string>
+    <string name="title_profile">Player TAG (without #)</string>
     <string name="title_chests">Chests</string>
     <string name="title_settings">Settings</string>
     <string name="get_upcoming_chests_button">Get Upcoming Chests</string>
     <string name="chests_list">Chests List</string>
+
+    <string name="nav_title_profile">Profile</string>
 </resources>
