@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -20,6 +21,10 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements RewardedVideoAdListener {
 
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
     private TextView mTextMessage;
     private Button mButtonGetUpcomingChests;
     private TextView mTextUpcomingChests;
+    private String apiKey = BuildConfig.ApiKey;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -94,28 +100,38 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
 
         // Reward the user.
 
-        // Instantiate the RequestQueue.
+        // TODO: Receive Player TAG from User input
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://www.google.com";
+        String playerTag = "%23" + "2LRRQPPJC";
+        String url = "https://api.clashroyale.com/v1/players/" + playerTag + "/upcomingchests";
 
-        // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        mTextUpcomingChests.setText("Response is: "+ response.substring(0,500));
+                        Gson gson = new Gson();
+                        UpcomingChestsResponse upcomingChestsResponse = gson.fromJson(response, UpcomingChestsResponse.class);
+
+                        // TODO: Put response in ListView
+                        mTextUpcomingChests.setText("Response is: " + upcomingChestsResponse.getItems().get(0).getName());
                     }
                 }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        mTextUpcomingChests.setText("An error ocurred retrieven upcoming chests.");
+                    }
+                }) {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                mTextUpcomingChests.setText("An error ocurred retrieven upcoming chests.");
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("authorization", "Bearer " + apiKey);
+                params.put("Accept", "application/json");
+
+                return params;
             }
-        });
+        };
 
-        // Add the request to the RequestQueue.
         queue.add(stringRequest);
-
         mTextUpcomingChests.setText("Lista de cofres");
     }
 
