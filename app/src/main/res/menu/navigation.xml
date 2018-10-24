@@ -8,7 +8,7 @@
 
     <item
         android:id="@+id/navigation_chests"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@mipmap/ic_supermagical_chest"
         android:title="@string/title_chests" />
 
     <item

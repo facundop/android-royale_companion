@@ -1,12 +1,15 @@
 package com.example.facundo.royalecompanion;
 
+import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -23,7 +26,9 @@ import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements RewardedVideoAdListener {
@@ -31,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
     private RewardedVideoAd mRewardedVideoAd;
     private TextView mTextMessage;
     private Button mButtonGetUpcomingChests;
-    private TextView mTextUpcomingChests;
+    private ListView listUpcomingChestsView;
     private String apiKey = BuildConfig.ApiKey;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -44,18 +49,18 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
                     mTextMessage.setVisibility(View.VISIBLE);
                     mTextMessage.setText(R.string.title_profile);
                     mButtonGetUpcomingChests.setVisibility(View.GONE);
-                    mTextUpcomingChests.setVisibility(View.GONE);
+                    listUpcomingChestsView.setVisibility(View.GONE);
                     return true;
                 case R.id.navigation_chests:
                     mTextMessage.setVisibility(View.GONE);
-                    mTextUpcomingChests.setVisibility(View.VISIBLE);
+                    listUpcomingChestsView.setVisibility(View.VISIBLE);
                     mButtonGetUpcomingChests.setVisibility(View.VISIBLE);
                     return true;
                 case R.id.navigation_settings:
                     mTextMessage.setVisibility(View.VISIBLE);
                     mTextMessage.setText(R.string.title_settings);
                     mButtonGetUpcomingChests.setVisibility(View.GONE);
-                    mTextUpcomingChests.setVisibility(View.GONE);
+                    listUpcomingChestsView.setVisibility(View.GONE);
                     return true;
             }
             return false;
@@ -73,11 +78,12 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
         mRewardedVideoAd.setRewardedVideoAdListener(this);
 
         mTextMessage = (TextView) findViewById(R.id.message);
-        mTextUpcomingChests = (TextView) findViewById(R.id.upcoming_chests);
-        mTextUpcomingChests.setVisibility(View.GONE);
+        listUpcomingChestsView = (ListView) findViewById(R.id.list_upcoming_chests);
+        listUpcomingChestsView.setVisibility(View.GONE);
         mButtonGetUpcomingChests = (Button) findViewById(R.id.get_upcoming_chests_button);
         mButtonGetUpcomingChests.setVisibility(View.GONE);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setItemIconTintList(null);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         loadRewardedVideoAd();
@@ -111,14 +117,12 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
                     public void onResponse(String response) {
                         Gson gson = new Gson();
                         UpcomingChestsResponse upcomingChestsResponse = gson.fromJson(response, UpcomingChestsResponse.class);
-
-                        // TODO: Put response in ListView
-                        mTextUpcomingChests.setText("Response is: " + upcomingChestsResponse.getItems().get(0).getName());
+                        loadUpcomingChests(upcomingChestsResponse.getItems());
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        mTextUpcomingChests.setText("An error ocurred retrieven upcoming chests.");
+                        // TODO: Toast ERROR
                     }
                 }) {
             @Override
@@ -132,7 +136,11 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
         };
 
         queue.add(stringRequest);
-        mTextUpcomingChests.setText("Lista de cofres");
+    }
+
+    private void loadUpcomingChests(List<ChestItem> upcomingChests) {
+        final UpcomingChestsAdapter adapter = new UpcomingChestsAdapter(this, upcomingChests);
+        listUpcomingChestsView.setAdapter(adapter);
     }
 
     @Override
