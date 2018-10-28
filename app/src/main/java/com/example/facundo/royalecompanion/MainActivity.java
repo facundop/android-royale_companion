@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Toast ERROR
+                        showError();
                     }
                 }) {
             @Override
@@ -138,6 +139,10 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
         queue.add(stringRequest);
     }
 
+    private void showError() {
+        Toast.makeText(this, "An error occurred. Please try again.", Toast.LENGTH_SHORT).show();
+    }
+
     private void loadUpcomingChests(List<ChestItem> upcomingChests) {
         final UpcomingChestsAdapter adapter = new UpcomingChestsAdapter(this, upcomingChests);
         listUpcomingChestsView.setAdapter(adapter);
@@ -145,14 +150,11 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
 
     @Override
     public void onRewardedVideoAdLeftApplication() {
-        //Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "An error occurred. Please try again.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onRewardedVideoAdClosed() {
-        //Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show();
-        loadRewardedVideoAd();
-    }
+    public void onRewardedVideoAdClosed() { loadRewardedVideoAd(); }
 
     @Override
     public void onRewardedVideoAdFailedToLoad(int errorCode) {
@@ -160,23 +162,15 @@ public class MainActivity extends AppCompatActivity implements RewardedVideoAdLi
     }
 
     @Override
-    public void onRewardedVideoAdLoaded() {
-        //Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show();
-    }
+    public void onRewardedVideoAdLoaded() {}
 
     @Override
-    public void onRewardedVideoAdOpened() {
-        //Toast.makeText(this, "onRewardedVideoAdOpened", Toast.LENGTH_SHORT).show();
-    }
+    public void onRewardedVideoAdOpened() {}
 
     @Override
-    public void onRewardedVideoStarted() {
-        //Toast.makeText(this, "onRewardedVideoStarted", Toast.LENGTH_SHORT).show();
-    }
+    public void onRewardedVideoStarted() {}
 
     @Override
-    public void onRewardedVideoCompleted() {
-        //Toast.makeText(this, "onRewardedVideoCompleted", Toast.LENGTH_SHORT).show();
-    }
+    public void onRewardedVideoCompleted() {}
 
 }
